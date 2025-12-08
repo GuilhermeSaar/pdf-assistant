@@ -1,11 +1,14 @@
 package com.gstech.PDFassistant.config;
 
 import com.gstech.PDFassistant.interfaces.Assistant;
+import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.ollama.OllamaEmbeddingModel;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
+import dev.langchain4j.store.embedding.EmbeddingStore;
+import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,7 +18,7 @@ import java.time.Duration;
 public class LLMConfig {
 
     private final String MODEL_NAME = "gemma3:4b";
-    private final String BASE_URL = "http://localhost:11434/v1";
+    private final String BASE_URL = "http://localhost:11434";
     private final String MODEL_EMBEDDING = "mxbai-embed-large";
 
     // configuração do modelo de LLM
@@ -39,15 +42,22 @@ public class LLMConfig {
                 .build();
     }
 
+    // configuração em memoria para teste
+    @Bean
+    public EmbeddingStore<TextSegment> embeddingStore() {
+        return new InMemoryEmbeddingStore<>();
+    }
+
     //
     @Bean
-    public Assistant assistant(OllamaChatModel chatModel, EmbeddingModel embeddingModel) {
+    public Assistant assistant(OllamaChatModel chatModel, EmbeddingModel embeddingModel, EmbeddingStore<TextSegment> embeddingStore) {
 
         return AiServices.builder(Assistant.class)
                 .chatModel(chatModel)
                 .contentRetriever(
                         EmbeddingStoreContentRetriever.builder()
                                 .embeddingModel(embeddingModel)
+                                .embeddingStore(embeddingStore)
                                 .maxResults(5)
                                 .minScore(0.75)
                                 .build()
