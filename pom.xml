@@ -73,6 +73,18 @@
 			<version>1.8.0-beta15</version>
 		</dependency>
 
+		<!-- Apache tika PDF -->
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-parser-pdf-module</artifactId>
+			<version>3.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>3.2.3</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>

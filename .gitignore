@@ -20,8 +20,10 @@ target/
 *.ipr
 
 ### properties files ###
-
 application-dev.properties
+
+### DOC ###
+/doc
 
 ### NetBeans ###
 /nbproject/private/
