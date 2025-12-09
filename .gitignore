@@ -19,6 +19,10 @@ target/
 *.iml
 *.ipr
 
+### properties files ###
+
+application-dev.properties
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
