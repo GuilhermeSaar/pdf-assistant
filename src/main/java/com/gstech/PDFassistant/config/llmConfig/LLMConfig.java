@@ -11,7 +11,7 @@ import java.time.Duration;
 @Configuration
 public class LLMConfig {
 
-    private final String MODEL_NAME = "gemma3:4b";
+    private final String MODEL_NAME = "gemma3:12b";
     private final String BASE_URL = "http://localhost:11434";
     private final String MODEL_EMBEDDING = "mxbai-embed-large";
 
@@ -22,6 +22,7 @@ public class LLMConfig {
         return OllamaChatModel.builder()
                 .baseUrl(BASE_URL)
                 .modelName(MODEL_NAME)
+                .timeout(Duration.ofSeconds(500))
                 .build();
     }
 

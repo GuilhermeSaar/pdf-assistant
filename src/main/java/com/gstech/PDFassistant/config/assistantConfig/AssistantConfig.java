@@ -23,8 +23,8 @@ public class AssistantConfig {
                         EmbeddingStoreContentRetriever.builder()
                                 .embeddingModel(embeddingModel)
                                 .embeddingStore(embeddingStore)
-                                .maxResults(5)
-                                .minScore(0.75)
+                                .maxResults(12)
+                                .minScore(0.60)
                                 .build()
                 )
                 .build();

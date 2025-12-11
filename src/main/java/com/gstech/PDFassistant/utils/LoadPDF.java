@@ -1,13 +1,18 @@
-package com.gstech.PDFassistant.service;
+package com.gstech.PDFassistant.utils;
 
-import org.apache.tika.exception.TikaException;
+import org.apache.tika.extractor.EmbeddedDocumentExtractor;
+import org.apache.tika.extractor.ParsingEmbeddedDocumentExtractor;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.pdf.PDFParserConfig;
 import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.stereotype.Service;
-import org.xml.sax.SAXException;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,11 +27,25 @@ public class LoadPDF {
         try (InputStream stream = new FileInputStream(PDF_DIRECTORY)) {
 
             AutoDetectParser parser = new AutoDetectParser();
+            ParseContext context = new ParseContext();
+
+            PDFParserConfig config = new PDFParserConfig();
+            config.setEnableAutoSpace(true);
+            config.setExtractInlineImages(false);
+            config.setSortByPosition(true);
+            config.setSuppressDuplicateOverlappingText(true);
+
+            context.set(PDFParserConfig.class, config);
+            context.set(EmbeddedDocumentExtractor.class, new ParsingEmbeddedDocumentExtractor(context));
+
             BodyContentHandler handler = new BodyContentHandler(-1);
             Metadata metadata = new Metadata();
 
             parser.parse(stream, handler, metadata);
-            String content = handler.toString();
+            String content = handler.toString()
+                    .replace("\u00AD", "")
+                    .replaceAll("-\\s*\n", "")
+                    .replaceAll("\n", " ");
 
             saveToTxt(content, "doc/teste.txt");
 
@@ -44,6 +63,5 @@ public class LoadPDF {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
