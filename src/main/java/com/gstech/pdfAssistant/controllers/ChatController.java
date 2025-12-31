@@ -3,6 +3,7 @@ package com.gstech.pdfAssistant.controllers;
 import com.gstech.pdfAssistant.DTO.MessageDTO;
 import com.gstech.pdfAssistant.interfaces.AssistantFreeTalk;
 import com.gstech.pdfAssistant.service.EmbeddingService;
+import com.gstech.pdfAssistant.service.RouterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ChatController {
 
     @Autowired
-    private AssistantFreeTalk assistant;
+    private RouterService routerService;
     @Autowired
     private EmbeddingService embed;
 
@@ -31,8 +32,12 @@ public class ChatController {
     @PostMapping(value = "/chat")
     public ResponseEntity<String> chat(@RequestBody MessageDTO message) {
 
-        String input = assistant.message(message.message());
-        return ResponseEntity.ok(input);
+        String response = routerService.route(
+                message.sessionId(),
+                message.message()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(value = "/search")
