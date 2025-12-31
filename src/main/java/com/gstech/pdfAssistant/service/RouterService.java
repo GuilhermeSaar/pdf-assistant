@@ -19,7 +19,7 @@ public class RouterService {
         this.pdfSessionService = pdfSessionService;
     }
 
-    public String route(UUID sessionId, String message) {
+    public String route(String sessionId, String message) {
 
         if (pdfSessionService.hasActivePdf(sessionId)) {
             return assistantPDF.message(message);

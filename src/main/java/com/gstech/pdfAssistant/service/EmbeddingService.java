@@ -1,5 +1,7 @@
 package com.gstech.pdfAssistant.service;
 
+import com.gstech.pdfAssistant.model.PdfDocument;
+import com.gstech.pdfAssistant.repositories.PdfDocumentRepository;
 import com.gstech.pdfAssistant.utils.ReadPDF;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.Metadata;
@@ -23,14 +25,28 @@ public class EmbeddingService {
     private EmbeddingModel embeddingModel;
     @Autowired
     ReadPDF readPDF;
+    @Autowired
+    PdfDocumentRepository pdfDocumentRepository;
 
-    public String generateEmbeddings(MultipartFile file) {
+    public String generateEmbeddings(MultipartFile file, String sessionId) {
 
         String text = readPDF.extractTextPDF(file);
+
         String documentId = UUID.randomUUID().toString();
-        Document doc = Document.from(
-                text,
-                Metadata.from("documentId", documentId));
+
+        PdfDocument pdf = new PdfDocument();
+        pdf.setSessionId(documentId);
+        pdf.setSessionId(sessionId);
+        pdf.setFileName(file.getOriginalFilename());
+        pdf.setActive(true);
+
+        pdfDocumentRepository.save(pdf);
+
+        Metadata metadata = new Metadata();
+        metadata.put("documentId", documentId);
+        metadata.put("sessionId", sessionId);
+
+        Document document = Document.from(text, metadata);
 
         EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
                 .embeddingModel(embeddingModel)
@@ -38,9 +54,10 @@ public class EmbeddingService {
                 .documentSplitter(DocumentSplitters.recursive(700, 180))
                 .build();
 
-        ingestor.ingest(doc);
+        ingestor.ingest(document);
 
         return documentId;
+
     }
 
     public String search(String query) {

@@ -14,7 +14,10 @@ public class PdfSessionService {
         this.pdfDocumentRepository = pdfDocumentRepository;
     }
 
-    public boolean hasActivePdf(UUID sessionId) {
+    public boolean hasActivePdf(String sessionId) {
+        if (sessionId == null) {
+            return false;
+        }
         return pdfDocumentRepository.existsById(sessionId);
     }
 }
